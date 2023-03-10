@@ -10,12 +10,12 @@
 ### Memory Usage ###
  Intel Hex-file ranges:
   0h - 3h		(dist/default/production\Temporizador.X.production.hex)
-  8h - 4AFh		(dist/default/production\Temporizador.X.production.hex)
+  8h - 4C3h		(dist/default/production\Temporizador.X.production.hex)
   200000h - 200007h		(dist/default/production\Temporizador.X.production.hex)
   300000h - 30000Dh		(dist/default/production\Temporizador.X.production.hex)
  Unused ranges:
   4h - 7h
-  4B0h - 1FFFFFh
+  4C4h - 1FFFFFh
   200008h - 2FFFFFh
 
 ### Hex Memory Map ###
@@ -100,6 +100,8 @@
 00000480 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 00000490 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 000004A0 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+000004B0 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+000004C0 | H1 H1 H1 H1 -- -- -- -- -- -- -- -- -- -- -- --
 ----------------------------------------------------------
 00200000 | H1 H1 H1 H1 H1 H1 H1 H1 -- -- -- -- -- -- -- --
 ----------------------------------------------------------

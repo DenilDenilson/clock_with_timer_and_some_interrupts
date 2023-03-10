@@ -8385,7 +8385,7 @@ void INTERRUPT_GLOBAL_Config(void);
 void INTERRUPT_INTx_Config(void);
 
 uint8_t AnodoComun7Seg[10] = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
-volatile uint16_t temporizador = 000;
+volatile uint16_t temporizador = 0;
 volatile _Bool start = 0;
 
 
@@ -8404,31 +8404,20 @@ int main (void)
 
     while(1)
     {
-        if ( PORTBbits.RB0 == 0 ) {
+        if ( PORTBbits.RB2 == 0 ) {
             _delay((unsigned long)((10)*(16000000UL/4000.0)));
             while ( PORTBbits.RB0 == 0 );
             T0CONbits.TMR0ON = 1;
             INTCONbits.TMR0IE = 1;
         }
 
-        if ( PORTBbits.RB1 == 0 ) {
-            _delay((unsigned long)((10)*(16000000UL/4000.0)));
-            while ( PORTBbits.RB1 == 0 );
-            temporizador = temporizador + 100;
-        }
-
-        if ( PORTBbits.RB2 == 0 ) {
-            _delay((unsigned long)((10)*(16000000UL/4000.0)));
-            while ( PORTBbits.RB2 == 0 );
-            temporizador = temporizador + 10;
-        }
-
         if ( PORTBbits.RB3 == 0 ) {
             _delay((unsigned long)((10)*(16000000UL/4000.0)));
-            while ( PORTBbits.RB3 == 0 );
-            temporizador = temporizador + 1;
+            while ( PORTBbits.RB0 == 0 );
+            T0CONbits.TMR0ON = 0;
+            INTCONbits.TMR0IE = 0;
         }
-
+# 74 "main.c"
         PUT_Number(temporizador);
 
 
@@ -8440,11 +8429,36 @@ int main (void)
 void __attribute__((picinterrupt(("")))) RutineServiceInterrupt(void) {
     if ( INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1 ) {
 
-        temporizador--;
+        if ( temporizador == 0 ) {
+            temporizador = 0;
+        }
+        else {
+            temporizador--;
+        }
 
 
         INTCONbits.TMR0IF = 0;
         TMR0 = 3036;
+    }
+
+    if ( INTCONbits.INT0IE == 1 && INTCONbits.INT0IF == 1 ) {
+
+        temporizador++;
+
+
+        INTCONbits.INT0IF = 0;
+    }
+
+    if ( INTCON3bits.INT1IE == 1 && INTCON3bits.INT1IF == 1 ) {
+
+        if ( temporizador == 0 ) {
+            temporizador = 0;
+        }
+        else {
+            temporizador--;
+        }
+
+        INTCON3bits.INT1IF = 0;
     }
 }
 
@@ -8562,5 +8576,15 @@ void INTERRUPT_INTx_Config(void) {
     INTCONbits.INT0IE = 1;
     INTCONbits.INT0IF = 0;
     INTCON2bits.INTEDG0 = 0;
+
+
+    INTCON3bits.INT1IE = 1;
+    INTCON3bits.INT1IF = 0;
+    INTCON2bits.INTEDG1 = 0;
+
+
+
+
+
 
 }

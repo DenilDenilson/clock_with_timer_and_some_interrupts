@@ -20,7 +20,7 @@ void INTERRUPT_GLOBAL_Config(void);
 void INTERRUPT_INTx_Config(void);
 
 uint8_t AnodoComun7Seg[10] = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
-volatile uint16_t temporizador = 000;
+volatile uint16_t temporizador = 0;
 volatile bool start = false;
 
 
@@ -39,30 +39,37 @@ int main (void)
     
     while(LOOP_MAIN_TRUE)
     {
-//        if ( PORTBbits.RB0 == 0 ) {
-//            __delay_ms(10);
-//            while ( PORTBbits.RB0 == 0 );
-//            T0CONbits.TMR0ON = 1; // Activar el timer
-//            INTCONbits.TMR0IE = 1; // Activamos la interrupcion del timer 0
-//        }
-        
-        if ( PORTBbits.RB1 == 0 ) {
-            __delay_ms(10);
-            while ( PORTBbits.RB1 == 0 );
-            temporizador = temporizador + 100;
-        }
-        
         if ( PORTBbits.RB2 == 0 ) {
             __delay_ms(10);
-            while ( PORTBbits.RB2 == 0 );
-            temporizador = temporizador + 10;
+            while ( PORTBbits.RB0 == 0 );
+            T0CONbits.TMR0ON = 1; // Activar el timer
+            INTCONbits.TMR0IE = 1; // Activamos la interrupcion del timer 0
         }
         
         if ( PORTBbits.RB3 == 0 ) {
             __delay_ms(10);
-            while ( PORTBbits.RB3 == 0 );
-            temporizador = temporizador + 1;
+            while ( PORTBbits.RB0 == 0 );
+            T0CONbits.TMR0ON = 0; // Activar el timer
+            INTCONbits.TMR0IE = 0; // Activamos la interrupcion del timer 0
         }
+        
+//        if ( PORTBbits.RB1 == 0 ) {
+//            __delay_ms(10);
+//            while ( PORTBbits.RB1 == 0 );
+//            temporizador = temporizador + 100;
+//        }
+//        
+//        if ( PORTBbits.RB2 == 0 ) {
+//            __delay_ms(10);
+//            while ( PORTBbits.RB2 == 0 );
+//            temporizador = temporizador + 10;
+//        }
+        
+//        if ( PORTBbits.RB3 == 0 ) {
+//            __delay_ms(10);
+//            while ( PORTBbits.RB3 == 0 );
+//            temporizador = temporizador + 1;
+//        }
         
         PUT_Number(temporizador);
         
@@ -75,19 +82,36 @@ int main (void)
 void __interrupt() RutineServiceInterrupt(void) {
     if ( INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1 ) {
         // Tarea
-        temporizador--;
+        if ( temporizador == 0 ) {
+            temporizador = 0;
+        }
+        else {
+            temporizador--;
+        }
         
        // Reinicamos carga y flag
         INTCONbits.TMR0IF = 0;
         TMR0 = 3036;
     }
     
-    if ( INTCONbits.INT0IE = 1 && INTCONbits.INT0IF = 1 ) {
+    if ( INTCONbits.INT0IE == 1 && INTCONbits.INT0IF == 1 ) {
         // Tarea
         temporizador++;
         
         // Reinciamos flag
         INTCONbits.INT0IF = 0;
+    }
+    
+    if ( INTCON3bits.INT1IE == 1 && INTCON3bits.INT1IF == 1 ) {
+        // Tarea
+        if ( temporizador == 0 ) {
+            temporizador = 0;
+        }
+        else {
+            temporizador--;
+        }
+        // Reiniciamos Flag
+        INTCON3bits.INT1IF = 0; 
     }
 }
 
@@ -204,6 +228,16 @@ void INTERRUPT_INTx_Config(void) {
     /* INT0 */
     INTCONbits.INT0IE = 1; // INT0 activado
     INTCONbits.INT0IF = 0; // Iniciamos flag deactivate
-    INTCON2bits.INTEDG0 = 0; // Config INT0 por flanco de bajada
+    INTCON2bits.INTEDG0 = 0; // Config INT0 por flanco de bajada}
+    
+    /* INT1 */
+    INTCON3bits.INT1IE = 1; // INT1 activado
+    INTCON3bits.INT1IF = 0; // Iniciamos flag disable
+    INTCON2bits.INTEDG1 = 0; // Config flanco de bajada
+    
+    /* INT2 */
+//    INTCON3bits.INT2IE = 1; // INT2 activado
+//    INTCON3bits.INT2IF = 0; // Iniciamos flag disable
+//    INTCON2bits.INTEDG2 = 0; // Config flanco de bajada
     
 }
